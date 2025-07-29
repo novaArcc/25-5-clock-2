@@ -20,7 +20,7 @@
       const [breakLength, setBreakLength] = useState(5);
       const [sessionLength, setSessionLength] = useState(25);
       const [timeLeft, setTimeLeft] = useState(25 * 60);
-      const [timerType, setTimerType] = useState("SESSION");
+      const [timerType, setTimerType] = useState("Session");
       const [isRunning, setIsRunning] = useState(false);
       const audioRef = React.useRef(null);
 
@@ -33,11 +33,11 @@
           }, 1000);
         } else if (isRunning && timeLeft === 0) {
           audioRef.current.play();
-          if (timerType === "SESSION") {
+          if (timerType === "Sesssion") {
             setTimerType("BREAK");
             setTimeLeft(breakLength * 60);
           } else {
-            setTimerType("SESSION");
+            setTimerType("Session");
             setTimeLeft(sessionLength * 60);
           }
         }
@@ -49,7 +49,7 @@
         setIsRunning(false);
         setBreakLength(5);
         setSessionLength(25);
-        setTimerType("SESSION");
+        setTimerType("Session");
         setTimeLeft(25 * 60);
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
@@ -78,7 +78,7 @@
         const newSession = sessionLength + amount;
         if (newSession >= 1 && newSession <= 60) {
           setSessionLength(newSession);
-          if (timerType === "SESSION") {
+          if (timerType === "Session") {
             setTimeLeft(newSession * 60);
           }
         }
