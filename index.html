@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>25 + 5 Clock</title>
+<link rel="stylesheet" href="index.css" />
+</head>
+<body>
+  <div id="app"></div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [breakLength, setBreakLength] = useState(5);
+      const [sessionLength, setSessionLength] = useState(25);
+      const [timeLeft, setTimeLeft] = useState(25 * 60);
+      const [timerType, setTimerType] = useState("SESSION");
+      const [isRunning, setIsRunning] = useState(false);
+      const audioRef = React.useRef(null);
+
+      useEffect(() => {
+        let timer = null;
+
+        if (isRunning && timeLeft > 0) {
+          timer = setTimeout(() => {
+            setTimeLeft(timeLeft - 1);
+          }, 1000);
+        } else if (isRunning && timeLeft === 0) {
+          audioRef.current.play();
+          if (timerType === "SESSION") {
+            setTimerType("BREAK");
+            setTimeLeft(breakLength * 60);
+          } else {
+            setTimerType("SESSION");
+            setTimeLeft(sessionLength * 60);
+          }
+        }
+
+        return () => clearTimeout(timer);
+      }, [isRunning, timeLeft, breakLength, sessionLength, timerType]);
+
+      const handleReset = () => {
+        setIsRunning(false);
+        setBreakLength(5);
+        setSessionLength(25);
+        setTimerType("SESSION");
+        setTimeLeft(25 * 60);
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      };
+
+      const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes < 10 ? '0' + minutes : minutes}:${
+          seconds < 10 ? '0' + seconds : seconds}`;
+      };
+
+      const changeBreak = (amount) => {
+        if (isRunning) return;
+        const newBreak = breakLength + amount;
+        if (newBreak >= 1 && newBreak <= 60) {
+          setBreakLength(newBreak);
+          if (timerType === "BREAK") {
+            setTimeLeft(newBreak * 60);
+          }
+        }
+      };
+
+      const changeSession = (amount) => {
+        if (isRunning) return;
+        const newSession = sessionLength + amount;
+        if (newSession >= 1 && newSession <= 60) {
+          setSessionLength(newSession);
+          if (timerType === "SESSION") {
+            setTimeLeft(newSession * 60);
+          }
+        }
+      };
+
+      return (
+        <div className="wrapper">
+          <h2>25 + 5 Clock</h2>
+
+          <div className="break-session-length">
+            <div>
+              <h3 id="break-label">Break Length</h3>
+              <button id="break-decrement" onClick={() => changeBreak(-1)} disabled={isRunning}>-</button>
+              <strong id="break-length">{breakLength}</strong>
+              <button id="break-increment" onClick={() => changeBreak(1)} disabled={isRunning}>+</button>
+            </div>
+            <div>
+              <h3 id="session-label">Session Length</h3>
+              <button id="session-decrement" onClick={() => changeSession(-1)} disabled={isRunning}>-</button>
+              <strong id="session-length">{sessionLength}</strong>
+              <button id="session-increment" onClick={() => changeSession(1)} disabled={isRunning}>+</button>
+            </div>
+          </div>
+
+          <div className="timer-wrapper">
+            <div className="timer" id="timer">
+              <h2 id="timer-label">{timerType}</h2>
+              <h3 id="time-left">{formatTime(timeLeft)}</h3>
+            </div>
+            <button id="start_stop" onClick={() => setIsRunning(!isRunning)}>
+              {isRunning ? "Pause" : "Start"}
+            </button>
+            <button id="reset" onClick={handleReset}>Reset</button>
+          </div>
+
+          <audio
+            id="beep"
+            preload="auto"
+            ref={audioRef}
+            src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+          />
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("app"));
+  </script>
+</body>
+</html>
+
