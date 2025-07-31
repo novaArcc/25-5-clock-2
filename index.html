@@ -33,7 +33,7 @@
           }, 1000);
         } else if (isRunning && timeLeft === 0) {
           audioRef.current.play();
-          if (timerType === "Sesssion") {
+          if (timerType === "Session") {
             setTimerType("BREAK");
             setTimeLeft(breakLength * 60);
           } else {
